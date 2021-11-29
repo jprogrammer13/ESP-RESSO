@@ -26,6 +26,12 @@ SystemESPRESSO::SystemESPRESSO()
 
     display = new Display(U8G2_R0, 18, 23, 5);
 
+    // Network information
+    wifi = WiFiClass();
+    this->ssid = "SSID";
+    this->ssid_pswd = "SSID_PASSWORD";
+    wifi.begin(this->ssid.c_str(), this->ssid_pswd.c_str());
+
     // INITIALIZE APPLICATIONS AND BACKGROUN FUNCTIONS
 
     this->serviceRegistration();

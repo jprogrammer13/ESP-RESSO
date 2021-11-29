@@ -14,6 +14,8 @@
 #include <Service/services.h>
 #include <App/applications.h>
 
+#include <WiFi.h>
+
 class SystemESPRESSO
 {
 public:
@@ -38,6 +40,12 @@ private:
     std::map<String, Ui *> applications;
     std::list<String> backgroundProcess;
     std::map<String, Service *> services;
+
+    // Network
+
+    WiFiClass wifi;
+    String ssid;
+    String ssid_pswd;
 };
 
 #endif
