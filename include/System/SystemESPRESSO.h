@@ -43,7 +43,7 @@ private:
 
     // Network
 
-    WiFiClass wifi;
+    WiFiClass *wifi;
     String ssid;
     String ssid_pswd;
 };

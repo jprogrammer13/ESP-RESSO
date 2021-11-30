@@ -63,14 +63,12 @@ String ServiceTempHumidity::sendMsg(String msg)
         {
             data_resp["humidity"] = humidity;
         }
+        serializeJson(response, responseMsg);
     }
     else
     {
-        data_resp["temperature"] = -255;
-        data_resp["humidity"] = -255;
+        responseMsg = "error";
     }
-
-    serializeJson(response, responseMsg);
 
     return responseMsg;
 }
