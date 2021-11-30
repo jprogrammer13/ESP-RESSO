@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#define ARDUINOJSON_USE_DOUBLE 1
 #include <Service/ServiceWeather.h>
 
 ServiceWeather::ServiceWeather(){};
@@ -35,67 +36,67 @@ String ServiceWeather::sendMsg(String msg)
     const char *data_city = doc["data"]["city"];
     int data_n_day = doc["data"]["n_day"];
 
-    //GET THE DATA
-    String tmp = "https://api.openweathermap.org/data/2.5/forecast/daily?q=" + String(data_city) + "&cnt=" + String(data_n_day) + "&units=metric&appid=" + API_key;
-    http.begin(tmp.c_str());
-
-    // Send HTTP GET request
-    int httpResponseCode = http.GET();
-
-    if (httpResponseCode > 0)
+    if (strcmp(action, "get") == 0)
     {
-        String payload = http.getString();
+        //GET THE DATA
+        String tmp = "https://api.openweathermap.org/data/2.5/forecast/daily?q=" + String(data_city) + "&cnt=" + String(data_n_day) + "&units=metric&appid=" + API_key;
+        http.begin(tmp.c_str());
 
-        // String input;
+        // Send HTTP GET request
+        int httpResponseCode = http.GET();
 
-        StaticJsonDocument<2048> response;
-
-        DeserializationError error = deserializeJson(response, payload);
-
-        if (error)
+        if (httpResponseCode > 0)
         {
-            Serial.print("deserializeJson() failed: ");
-            Serial.println(error.c_str());
-            return "error";
-        }
+            String payload = http.getString();
 
-        long list_item_sunrise[data_n_day];
-        long list_item_sunset[data_n_day];
-        float list_item_temp_day[data_n_day];
-        float list_item_temp_min[data_n_day];
-        float list_item_temp_max[data_n_day];
-        float list_item_temp_night[data_n_day];
-        float list_item_temp_eve[data_n_day];
-        float list_item_temp_morn[data_n_day];
+            DynamicJsonDocument response(3072);
+            StaticJsonDocument<2048> api_response;
 
-        for (JsonObject list_item : response["list"].as<JsonArray>())
-        {
-            for (int nth_day; nth_day < data_n_day; nth_day++)
+            DeserializationError error = deserializeJson(api_response, payload);
+
+            if (error)
             {
-                list_item_sunrise[nth_day] = list_item["sunrise"]; // 1638167700, 1638254172, 1638340644
-                list_item_sunset[nth_day] = list_item["sunset"];   // 1638199986, 1638286356, 1638372729
+                Serial.print("deserializeJson() failed: ");
+                Serial.println(error.c_str());
+                return "error";
+            }
+
+            JsonObject data_r = response.createNestedObject("data");
+            JsonArray data_temp_morning = data_r.createNestedArray("temp_morning");
+            JsonArray data_temp_day = data_r.createNestedArray("temp_day");
+            JsonArray data_temp_evening = data_r.createNestedArray("temp_evening");
+            JsonArray data_temp_night = data_r.createNestedArray("temp_night");
+            JsonArray data_temp_min = data_r.createNestedArray("temp_min");
+            JsonArray data_temp_max = data_r.createNestedArray("temp_max");
+            JsonArray data_humidity = data_r.createNestedArray("humidity");
+            JsonArray data_weather = data_r.createNestedArray("weather");
+
+            for (JsonObject list_item : api_response["list"].as<JsonArray>())
+            {
 
                 JsonObject list_item_temp = list_item["temp"];
-                list_item_temp_day[nth_day] = list_item_temp["day"];     // 6.75, 6.01, 8.54
-                list_item_temp_min[nth_day] = list_item_temp["min"];     // -1.44, -0.38, 2.26
-                list_item_temp_max[nth_day] = list_item_temp["max"];     // 6.84, 6.87, 8.54
-                list_item_temp_night[nth_day] = list_item_temp["night"]; // 0.77, 2.54, 3.12
-                list_item_temp_eve[nth_day] = list_item_temp["eve"];     // 4.34, 2.45, 3.05
-                list_item_temp_morn[nth_day] = list_item_temp["morn"];   // 2.28, -0.27, 2.34
-
-                int list_item_humidity = list_item["humidity"]; // 48, 34, 56
+                data_temp_morning.add(list_item_temp["morn"]);
+                data_temp_day.add(list_item_temp["day"]);
+                data_temp_evening.add(list_item_temp["eve"]);
+                data_temp_night.add(list_item_temp["night"]);
+                data_temp_min.add(list_item_temp["min"]);
+                data_temp_max.add(list_item_temp["max"]);
+                data_humidity.add(list_item["humidity"]);
 
                 JsonObject list_item_weather_0 = list_item["weather"][0];
-                const char *list_item_weather_0_main = list_item_weather_0["main"]; // "Clouds", "Clear", "Clear"
+                data_weather.add(list_item_weather_0["main"].as<String>());
             }
+
+            serializeJson(response, responseMsg);
         }
-        
-    }
-    else
-    {
-    }
-    // Free resources
-    http.end();
+        else
+        {
+            responseMsg = "err";
+        }
 
+        // Free resources
+        http.end();
+    }
 
+    return responseMsg;
 }
