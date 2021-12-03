@@ -5,6 +5,7 @@ void SystemESPRESSO::serviceRegistration()
 {
     services.insert(std::pair<String, Service *>("ServiceTempHumidity", new ServiceTempHumidity()));
     services.insert(std::pair<String, Service *>("ServiceWeather", new ServiceWeather(this->wifi)));
+    services.insert(std::pair<String, Service *>("ServiceTime", new ServiceTime(this->wifi)));
 }
 
 void SystemESPRESSO::applicationRegistration()
