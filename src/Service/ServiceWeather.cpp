@@ -38,6 +38,7 @@ String ServiceWeather::sendMsg(String msg)
 
     if (strcmp(action, "get") == 0)
     {
+        data_n_day = (data_n_day > 2) ? 2 : data_n_day;
         //GET THE DATA
         String tmp = "https://api.openweathermap.org/data/2.5/forecast/daily?q=" + String(data_city) + "&cnt=" + String(data_n_day) + "&units=metric&appid=" + API_key;
         http.begin(tmp.c_str());
@@ -49,7 +50,7 @@ String ServiceWeather::sendMsg(String msg)
         {
             String payload = http.getString();
 
-            DynamicJsonDocument response(3072);
+            DynamicJsonDocument response(512);
             StaticJsonDocument<2048> api_response;
 
             DeserializationError error = deserializeJson(api_response, payload);
