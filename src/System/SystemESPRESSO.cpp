@@ -4,6 +4,7 @@
 void SystemESPRESSO::serviceRegistration()
 {
     services.insert(std::pair<String, Service *>("ServiceTempHumidity", new ServiceTempHumidity()));
+    services.insert(std::pair<String, Service *>("ServiceRelay", new ServiceRelay()));
     services.insert(std::pair<String, Service *>("ServiceWeather", new ServiceWeather(this->wifi)));
     services.insert(std::pair<String, Service *>("ServiceTime", new ServiceTime(this->wifi)));
 }
@@ -56,7 +57,7 @@ void SystemESPRESSO::begin()
         Serial.print(wifi->status());
     }
     Serial.println("Connected");
-    
+
     systemServices->registerServices(&services);
     systemUi->registerApplications(&applications);
     systemUi->setUi("Home");
