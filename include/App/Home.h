@@ -22,7 +22,7 @@ public:
 
             // msg = "{\"action\":\"get\",\"data\":\"temperature\"}";
             // Serial.println(sysServices->sendMsg("ServiceTempHumidity", msg));
- 
+
             // msg = "{\"action\":\"get\",\"data\":\"humidity\"}";
             // Serial.println(sysServices->sendMsg("ServiceTempHumidity", msg));
             // Serial.println("-----------------------------");
@@ -31,6 +31,12 @@ public:
 
             // msg = "{\"action\":\"get\",\"data\":{\"gmt_offset\":3600,\"light_offest\":3600}}";
             // Serial.println(sysServices->sendMsg("ServiceTime", msg));
+
+            // msg = "{\"action\":\"send\",\"data\":{\"status\":1}}";
+            // Serial.println(sysServices->sendMsg("ServiceRelay", msg));
+            // delay(3000);
+            // msg = "{\"action\":\"send\",\"data\":{\"status\":0}}";
+            // Serial.println(sysServices->sendMsg("ServiceRelay", msg));
         }
     };
 
