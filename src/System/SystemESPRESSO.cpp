@@ -30,8 +30,8 @@ SystemESPRESSO::SystemESPRESSO()
     display = new Display(U8G2_R0, 18, 23, 5);
 
     // Network information
-    this->ssid = "Riky Hotspot";
-    this->ssid_pswd = "Riccardo_13";
+    this->ssid = "FRITZ!Box 7490";
+    this->ssid_pswd = "RiccardoBussola13";
 
     // INITIALIZE APPLICATIONS AND BACKGROUN FUNCTIONS
 
@@ -51,13 +51,20 @@ void SystemESPRESSO::begin()
     Serial.println(this->ssid_pswd.c_str());
     wifi->begin(this->ssid.c_str(), this->ssid_pswd.c_str());
     Serial.println("Connecting");
-    while (wifi->status() != WL_CONNECTED)
+    unsigned long t_start = millis();
+    while (wifi->status() != WL_CONNECTED && millis() - t_start < 30000)
     {
         delay(500);
-        Serial.print(wifi->status());
+        // Serial.print(wifi->status());
     }
-    Serial.println("Connected");
-
+    if (wifi->status() == WL_CONNECTED)
+    {
+        Serial.println("Connected");
+    }
+    else
+    {
+        Serial.println("Connection problems");
+    }
     systemServices->registerServices(&services);
     systemUi->registerApplications(&applications);
     systemUi->setUi("Home");

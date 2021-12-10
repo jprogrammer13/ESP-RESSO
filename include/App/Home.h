@@ -12,10 +12,12 @@ public:
     void background();
 
 private:
-    int t_start = millis();
-    float temp_current; //temp corrente
+    int t_start;
+    int t_tmp_start;
+    float temp_current; // temp corrente
     int humidity;
     float temp_selected; // temp desiderata
+    float tmp_temp;
 
     int hour;
     int minute;
