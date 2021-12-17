@@ -5,15 +5,21 @@
 Home::Home(Navigation *_navigation, Display *_display, SystemUi *_sysUi, SystemServices *_sysService) : App(_navigation, _display, _sysUi, _sysService)
 {
     t_start = millis();
-    temp_current = 21.5;
-    temp_selected = temp_current;
-    tmp_temp = temp_current;
-    humidity = 70;
+    t_time = millis();
+    t_temp_check = millis();
 
-    hour = 15;
-    minute = 18;
-    day_week = "Mon";
-    day = 32;
+    temp_current = 0;
+    humidity = 0;
+
+    hour = 0;
+    minute = 0;
+    day_week = "";
+    day = 0;
+
+    first_time = 1;
+
+    temp_selected = 20;
+    tmp_temp = temp_current;
 }
 
 void Home::draw()
@@ -69,7 +75,7 @@ void Home::draw()
         display->drawRBox(8, 33, 39, 12, 5);
         display->setDrawColor(0);
         display->setFont(u8g2_font_courB08_tf);
-        display->drawUTF8(14, 43, ("h:"+String(humidity) + "%").c_str());
+        display->drawUTF8(14, 43, ("h:" + String(humidity) + "%").c_str());
 
         display->setDrawColor(1);
 
@@ -119,4 +125,82 @@ void Home::draw()
     }
 }
 
-void Home::background() {}
+void Home::background()
+{
+
+    if (millis() - t_start > 10000 || first_time)
+    {
+        t_start = millis();
+        this->get_temp_sensor();
+    }
+
+    if (millis() - t_time > 30000 || first_time)
+    {
+        t_time = millis();
+        this->get_time_service();
+    }
+
+    first_time = 0;
+
+    if (millis() - t_temp_check > 60000)
+    {
+        t_temp_check = millis();
+        if (temp_current < temp_selected + 0.5)
+        {
+            this->set_relay(1);
+        }
+        else
+        {
+            this->set_relay(0);
+        }
+    }
+}
+
+void Home::get_temp_sensor()
+{
+
+    String msg = "{\"action\":\"get\",\"data\":\"all\"}";
+    String response = sysServices->sendMsg("ServiceTempHumidity", msg);
+    DynamicJsonDocument doc(96);
+
+    DeserializationError error = deserializeJson(doc, response);
+
+    if (error)
+    {
+        Serial.print("deserializeJson() failed: ");
+        Serial.println(error.c_str());
+        return;
+    }
+
+    this->temp_current = doc["data"]["temperature"];
+    this->humidity = doc["data"]["humidity"];
+}
+
+void Home::get_time_service()
+{
+    String msg = "{\"action\":\"get\",\"data\":{\"gmt_offset\":3600,\"light_offest\":3600}}";
+    String response = sysServices->sendMsg("ServiceTime", msg);
+
+    DynamicJsonDocument doc(256);
+
+    DeserializationError error = deserializeJson(doc, response);
+
+    if (error)
+    {
+        Serial.print("deserializeJson() failed: ");
+        Serial.println(error.c_str());
+        return;
+    }
+
+    JsonObject data = doc["data"];
+    this->day_week = data["day_name"].as<String>().substring(0, 3);
+    this->day = data["day"];
+    this->hour = data["hour"];
+    this->minute = data["minute"];
+}
+
+void Home::set_relay(bool state)
+{
+    String msg = "{\"action\":\"send\",\"data\":{\"status\":" + String(state) + "}}";
+    sysServices->sendMsg("ServiceRelay", msg);
+}

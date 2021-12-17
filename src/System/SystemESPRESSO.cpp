@@ -30,8 +30,8 @@ SystemESPRESSO::SystemESPRESSO()
     display = new Display(U8G2_R0, 18, 23, 5);
 
     // Network information
-    this->ssid = "FRITZ!Box 7490";
-    this->ssid_pswd = "RiccardoBussola13";
+    this->ssid = "Riky Hotspot";
+    this->ssid_pswd = "Riccardo_13";
 
     // INITIALIZE APPLICATIONS AND BACKGROUN FUNCTIONS
 
