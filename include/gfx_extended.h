@@ -12,6 +12,7 @@ public:
     // EXTENDED FUNCTIONS
     void drawThickLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t radius, bool highQuality = false);
     void drawArc(int32_t cx, int32_t cy, float start, float stop, uint16_t radius, uint8_t lineRadius, uint16_t steps = 100, bool highQuality = false);
+    void drawDithering(int sx, int sy, int w, int h, int percent, int size);
 };
 
 #endif

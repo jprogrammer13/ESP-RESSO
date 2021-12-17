@@ -16,7 +16,7 @@ String ServiceTime::sendMsg(String msg)
     /** TODO: FIXARE 
      * @gtmoffset: offset for utc time
      */
-    StaticJsonDocument<128> doc;
+    DynamicJsonDocument doc(125);
 
     DeserializationError error = deserializeJson(doc, msg);
 
@@ -32,7 +32,7 @@ String ServiceTime::sendMsg(String msg)
     int data_gmt_offset = doc["data"]["gmt_offset"];
     int data_light_offest = doc["data"]["light_offest"];
 
-    StaticJsonDocument<255> response;
+    DynamicJsonDocument response(255);
 
     JsonObject data_r = response.createNestedObject("data");
 
@@ -42,7 +42,6 @@ String ServiceTime::sendMsg(String msg)
         struct tm timeinfo;
         if (getLocalTime(&timeinfo))
         {
-            Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
 
             char s_day_name[255];
             char s_month[255];

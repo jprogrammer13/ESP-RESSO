@@ -17,7 +17,7 @@ String ServiceRelay::sendMsg(String msg)
      * @status: set status of relay
      */
 
-    StaticJsonDocument<96> doc;
+    DynamicJsonDocument doc(96);
     DeserializationError error = deserializeJson(doc, msg);
 
     if (error)
@@ -32,7 +32,7 @@ String ServiceRelay::sendMsg(String msg)
 
     if (strcmp(action, "send") == 0)
     {
-        StaticJsonDocument<32> response;
+        DynamicJsonDocument response(32);
         this->status = data_status;
         digitalWrite(this->relay_pin, this->status);
         response["data"]["status"] = this->status;

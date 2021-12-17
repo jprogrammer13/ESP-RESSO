@@ -9,38 +9,27 @@ public:
     Home(Navigation *_navigation, Display *_display, SystemUi *_sysUi, SystemServices *_sysService);
     void draw();
     void draw_widget(){};
-    void background()
-    {
-        if (millis() - t_start > 10000)
-        {
-            t_start = millis();
-            String msg;
-
-            // Serial.println("---SERVICE-TEST--------------");
-            // msg = "{\"action\":\"get\",\"data\":\"all\"}";
-            // Serial.println(sysServices->sendMsg("ServiceTempHumidity", msg));
-
-            // msg = "{\"action\":\"get\",\"data\":\"temperature\"}";
-            // Serial.println(sysServices->sendMsg("ServiceTempHumidity", msg));
-
-            // msg = "{\"action\":\"get\",\"data\":\"humidity\"}";
-            // Serial.println(sysServices->sendMsg("ServiceTempHumidity", msg));
-            // Serial.println("-----------------------------");
-            // msg = "{\"action\":\"get\",\"data\":{\"city\":\"Trento\",\"n_day\":2}}";
-            // Serial.println(sysServices->sendMsg("ServiceWeather", msg));
-
-            // msg = "{\"action\":\"get\",\"data\":{\"gmt_offset\":3600,\"light_offest\":3600}}";
-            // Serial.println(sysServices->sendMsg("ServiceTime", msg));
-
-            // msg = "{\"action\":\"send\",\"data\":{\"status\":1}}";
-            // Serial.println(sysServices->sendMsg("ServiceRelay", msg));
-            // delay(3000);
-            // msg = "{\"action\":\"send\",\"data\":{\"status\":0}}";
-            // Serial.println(sysServices->sendMsg("ServiceRelay", msg));
-        }
-    };
+    void background();
+    void get_temp_sensor();
+    void get_time_service();
+    void set_relay(bool state);
 
 private:
-    int radius;
-    int t_start = millis();
+    unsigned long t_start;
+    unsigned long t_tmp_start;
+    unsigned long t_time;
+    unsigned long t_weather;
+    unsigned long t_temp_check;
+
+    float temp_current; // temp corrente
+    int humidity;
+    float temp_selected; // temp desiderata
+    float tmp_temp;
+
+    int hour;
+    int minute;
+    String day_week;
+    int day;
+
+    bool first_time;
 };
