@@ -20,7 +20,7 @@ String ServiceWeather::sendMsg(String msg)
      * @n_day: number of future day
      */
 
-    StaticJsonDocument<128> doc;
+    DynamicJsonDocument doc(128);
 
     DeserializationError error = deserializeJson(doc, msg);
 
@@ -51,7 +51,7 @@ String ServiceWeather::sendMsg(String msg)
             String payload = http.getString();
 
             DynamicJsonDocument response(512);
-            StaticJsonDocument<2048> api_response;
+            DynamicJsonDocument api_response(2048);
 
             DeserializationError error = deserializeJson(api_response, payload);
 
