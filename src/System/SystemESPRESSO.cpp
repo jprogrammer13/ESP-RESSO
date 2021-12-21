@@ -7,6 +7,7 @@ void SystemESPRESSO::serviceRegistration()
     services.insert(std::pair<String, Service *>("ServiceRelay", new ServiceRelay()));
     services.insert(std::pair<String, Service *>("ServiceWeather", new ServiceWeather(this->wifi)));
     services.insert(std::pair<String, Service *>("ServiceTime", new ServiceTime(this->wifi)));
+    services.insert(std::pair<String, Service *>("ServiceWiFi", new ServiceWiFi(this->wifi)));
 }
 
 void SystemESPRESSO::applicationRegistration()
@@ -29,9 +30,11 @@ SystemESPRESSO::SystemESPRESSO()
 
     display = new Display(U8G2_R0, 18, 23, 5);
 
+    wifi = new WiFiClass();
+
     // Network information
-    this->ssid = "Riky Hotspot";
-    this->ssid_pswd = "Riccardo_13";
+    this->ssid = "TIM-19861131";
+    this->ssid_pswd = "BussolaGay";
 
     // INITIALIZE APPLICATIONS AND BACKGROUN FUNCTIONS
 
@@ -45,26 +48,6 @@ void SystemESPRESSO::begin()
     navigation->begin();
     display->begin();
 
-    wifi = new WiFiClass();
-    wifi->mode(WIFI_STA);
-    Serial.println(this->ssid.c_str());
-    Serial.println(this->ssid_pswd.c_str());
-    wifi->begin(this->ssid.c_str(), this->ssid_pswd.c_str());
-    Serial.println("Connecting");
-    unsigned long t_start = millis();
-    while (wifi->status() != WL_CONNECTED && millis() - t_start < 30000)
-    {
-        delay(500);
-        // Serial.print(wifi->status());
-    }
-    if (wifi->status() == WL_CONNECTED)
-    {
-        Serial.println("Connected");
-    }
-    else
-    {
-        Serial.println("Connection problems");
-    }
     systemServices->registerServices(&services);
     systemUi->registerApplications(&applications);
     systemUi->setUi("Home");

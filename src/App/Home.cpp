@@ -117,7 +117,7 @@ void Home::draw()
 
         break;
     case A_SELECT:
-
+            sysUi->setUi("Test");
         break;
     case A_BACK_LONG:
 
@@ -127,6 +127,12 @@ void Home::draw()
 
 void Home::background()
 {
+
+    if (first_time)
+    {
+        String msg = "{\"action\":\"send\",\"data\":{\"wifi_mode\":\"WIFI_STA\",\"ssid\":\"Riky Hotspot\",\"psw\":\"Riccardo_13\"}}";
+        Serial.println(sysServices->sendMsg("ServiceWiFi", msg));
+    }
 
     if (millis() - t_start > 10000 || first_time)
     {
