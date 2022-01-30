@@ -117,22 +117,13 @@ void Home::draw()
 
         break;
     case A_SELECT:
-            sysUi->setUi("Test");
-        break;
-    case A_BACK_LONG:
-
+        sysUi->setUi("Menu");
         break;
     }
 }
 
 void Home::background()
 {
-
-    if (first_time)
-    {
-        String msg = "{\"action\":\"send\",\"data\":{\"wifi_mode\":\"WIFI_STA\",\"ssid\":\"Riky Hotspot\",\"psw\":\"Riccardo_13\"}}";
-        Serial.println(sysServices->sendMsg("ServiceWiFi", msg));
-    }
 
     if (millis() - t_start > 10000 || first_time)
     {
@@ -148,11 +139,26 @@ void Home::background()
 
     first_time = 0;
 
+    //timedeltaT
+    /*if (millis() - t_temp_check > 60000)
+    {
+        t_temp_check = millis();
+        if (temp_current < temp_selected + 0.5)
+        {
+            this->set_relay(1);
+        }
+        else
+        {
+            this->set_relay(0);
+        }
+    }*/
+
     if (millis() - t_temp_check > 60000)
     {
         t_temp_check = millis();
         if (temp_current < temp_selected + 0.5)
         {
+
             this->set_relay(1);
         }
         else

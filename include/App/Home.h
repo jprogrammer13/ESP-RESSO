@@ -14,6 +14,7 @@ public:
     void get_time_service();
     void set_relay(bool state);
 
+
 private:
     unsigned long t_start;
     unsigned long t_tmp_start;
@@ -32,4 +33,5 @@ private:
     int day;
 
     bool first_time;
+
 };

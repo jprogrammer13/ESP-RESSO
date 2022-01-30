@@ -3,3 +3,5 @@
 #include <Service/ServiceTime.h>
 #include <Service/ServiceRelay.h>
 #include <Service/ServiceWiFi.h>
+#include <Service/ServiceTempLog.h>
+

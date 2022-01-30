@@ -17,8 +17,17 @@ void Test::draw()
 
     switch (navigation->get_action())
     {
-    case A_BACK_LONG:
-        sysUi->setUi("Home");
+    case A_BACK:
+        sysUi->setUi("Menu");
+        break;
+    case A_UP:
+        numero++;
+        break;
+    case A_DOWN:
+        numero--;
+        break;
+    case A_SELECT:
+        numero = 20;
         break;
     }
 }

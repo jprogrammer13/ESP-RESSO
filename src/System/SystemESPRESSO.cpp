@@ -4,6 +4,7 @@
 void SystemESPRESSO::serviceRegistration()
 {
     services.insert(std::pair<String, Service *>("ServiceTempHumidity", new ServiceTempHumidity()));
+    services.insert(std::pair<String, Service *>("ServiceTempLog", new ServiceTempLog()));
     services.insert(std::pair<String, Service *>("ServiceRelay", new ServiceRelay()));
     services.insert(std::pair<String, Service *>("ServiceWeather", new ServiceWeather(this->wifi)));
     services.insert(std::pair<String, Service *>("ServiceTime", new ServiceTime(this->wifi)));
@@ -12,6 +13,8 @@ void SystemESPRESSO::serviceRegistration()
 
 void SystemESPRESSO::applicationRegistration()
 {
+    applications.insert(std::pair<String, App *>("Config", new Config(navigation, display, systemUi, systemServices)));
+    applications.insert(std::pair<String, App *>("Menu", new Menu(navigation, display, systemUi, systemServices)));
     applications.insert(std::pair<String, App *>("Home", new Home(navigation, display, systemUi, systemServices)));
     applications.insert(std::pair<String, App *>("Test", new Test(navigation, display, systemUi, systemServices)));
 }
@@ -32,10 +35,6 @@ SystemESPRESSO::SystemESPRESSO()
 
     wifi = new WiFiClass();
 
-    // Network information
-    this->ssid = "TIM-19861131";
-    this->ssid_pswd = "BussolaGay";
-
     // INITIALIZE APPLICATIONS AND BACKGROUN FUNCTIONS
 
     this->serviceRegistration();
@@ -50,14 +49,13 @@ void SystemESPRESSO::begin()
 
     systemServices->registerServices(&services);
     systemUi->registerApplications(&applications);
-    systemUi->setUi("Home");
+    systemUi->setUi("Config");
 }
 
 void SystemESPRESSO::runBackground()
 {
     for (auto const &f : backgroundProcess)
     {
-        // Serial.println(f);
         applications[f]->background();
     }
 }
