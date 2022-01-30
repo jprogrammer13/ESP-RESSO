@@ -37,7 +37,6 @@ String ServiceWiFi::sendMsg(String msg)
         {
             wifi->mode(WIFI_STA);
             wifi->begin(data_ssid, data_psw);
-            Serial.println("Connecting");
             unsigned long t_start = millis();
             while (wifi->status() != WL_CONNECTED && millis() - t_start < 30000)
             {

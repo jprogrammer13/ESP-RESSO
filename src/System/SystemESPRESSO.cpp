@@ -9,6 +9,8 @@ void SystemESPRESSO::serviceRegistration()
     services.insert(std::pair<String, Service *>("ServiceWeather", new ServiceWeather(this->wifi)));
     services.insert(std::pair<String, Service *>("ServiceTime", new ServiceTime(this->wifi)));
     services.insert(std::pair<String, Service *>("ServiceWiFi", new ServiceWiFi(this->wifi)));
+    services.insert(std::pair<String, Service *>("ServiceMQTT", new ServiceMQTT(this->wifi, this->mqtt)));
+    services.insert(std::pair<String, Service *>("ServiceTempHumidityMQTT", new ServiceTempHumidityMQTT(this->wifi, this->mqtt)));
 }
 
 void SystemESPRESSO::applicationRegistration()
@@ -26,6 +28,7 @@ void SystemESPRESSO::backgroundFunctionRegistration()
 
 SystemESPRESSO::SystemESPRESSO()
 {
+
     navigation = new Navigation(4, 12, 21, 22);
 
     systemUi = new SystemUi();
@@ -34,6 +37,9 @@ SystemESPRESSO::SystemESPRESSO()
     display = new Display(U8G2_R0, 18, 23, 5);
 
     wifi = new WiFiClass();
+
+    mqtt = new Adafruit_MQTT_Client(&(wifiClientSecure), "io.adafruit.com", 8883, "Riccardo136", "c6056b140d174bdfbe55d6fb637e8695");
+    wifiClientSecure.setCACert(adafruitio_root_ca);
 
     // INITIALIZE APPLICATIONS AND BACKGROUN FUNCTIONS
 
