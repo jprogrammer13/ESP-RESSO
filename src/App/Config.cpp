@@ -13,13 +13,14 @@ void Config::draw()
     display->firstPage();
     do
     {
-        display->drawCircle(64, 32, 20);
+       display->drawXBMP(42, 12, 44, 44, logo);
+
     } while (display->nextPage());
 
     // INITIAL WIFI CONFIG AND CONNECT
     Serial.println("Connecting WiFi");
 
-    String msg = "{\"action\":\"send\",\"data\":{\"wifi_mode\":\"WIFI_STA\",\"ssid\":\"Riky Hotspot\",\"psw\":\"Riccardo_13\"}}";
+    String msg = "{\"action\":\"send\",\"data\":{\"wifi_mode\":\"WIFI_STA\",\"ssid\":\"FRITZ!Box 7490\",\"psw\":\"RiccardoBussola13\"}}";
     // ONCE WIFI CONNECTED, CONNECT MQTT
     if (strcmp(sysServices->sendMsg("ServiceWiFi", msg).c_str(), "{\"data\":1}") == 0)
     {
@@ -33,7 +34,6 @@ void Config::draw()
             Serial.println("MQTT Connected!");
 
             // System is connected
-            sysServices->sendMsg("ServiceTempHumidityMQTT", "");
             sysUi->setUi("Home");
         }
     }

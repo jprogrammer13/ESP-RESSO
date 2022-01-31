@@ -4,9 +4,11 @@
 
 Home::Home(Navigation *_navigation, Display *_display, SystemUi *_sysUi, SystemServices *_sysService) : App(_navigation, _display, _sysUi, _sysService)
 {
-    t_start = millis();
+    t_sensor = millis();
+    t_mqtt_pub = millis();
     t_time = millis();
     t_temp_check = millis();
+    t_relay_check = millis();
 
     temp_current = 0;
     humidity = 0;
@@ -20,6 +22,8 @@ Home::Home(Navigation *_navigation, Display *_display, SystemUi *_sysUi, SystemS
 
     temp_selected = 20;
     tmp_temp = temp_current;
+
+    thermostat_on = true;
 }
 
 void Home::draw()
@@ -80,22 +84,34 @@ void Home::draw()
         display->setDrawColor(1);
 
         // SEZIONE TACCHETTE
-
-        display->setDrawColor(0);
-        display->drawBox(0, 50, 128, 14);
-
-        display->setDrawColor(1);
-
-        for (int i = 2; i < 128; i += 3)
+        if (thermostat_on)
         {
-            display->drawLine(i, 52, i, 62);
+            display->setDrawColor(0);
+            display->drawBox(0, 50, 128, 14);
+
+            display->setDrawColor(1);
+
+            for (int i = 2; i < 128; i += 3)
+            {
+                display->drawLine(i, 52, i, 62);
+            }
+
+            int temp_x = map(temp_current, 0, 40, 0, 128);
+            int temp_sel_x = map(temp_selected, 0, 40, 0, 128);
+
+            display->drawBox(temp_x, 50, 4, 14);
+            display->drawBox(temp_sel_x, 50, 2, 14);
         }
-
-        int temp_x = map(temp_current, 0, 40, 0, 128);
-        int temp_sel_x = map(temp_selected, 0, 40, 0, 128);
-
-        display->drawBox(temp_x, 50, 4, 14);
-        display->drawBox(temp_sel_x, 50, 2, 14);
+        else
+        {
+            /* code */
+            display->drawBox(0, 50, 128, 14);
+            display->setFont(u8g2_font_7x14_tf);
+            display->setCursor(13, 62);
+            display->setDrawColor(0);
+            display->print("Thermostat: OFF");
+            display->setDrawColor(1);
+        }
 
     } while (display->nextPage());
 
@@ -119,46 +135,104 @@ void Home::draw()
     case A_SELECT:
         sysUi->setUi("Menu");
         break;
+    case A_SELECT_LONG:
+        thermostat_on = !thermostat_on;
+        if (thermostat_on)
+        {
+            temp_selected = 20;
+        }
+        else
+        {
+            temp_selected = 10;
+        }
     }
 }
 
 void Home::background()
 {
-
-    if (millis() - t_start > 10000 || first_time)
-    {
-        t_start = millis();
-        this->get_temp_sensor();
-    }
-
+    // GET TIME
     if (millis() - t_time > 30000 || first_time)
     {
         t_time = millis();
+        Serial.println("Getting time value");
         this->get_time_service();
     }
 
-    first_time = 0;
+    // GET SENSOR VALUES
+    if (millis() - t_sensor > 10000 || first_time)
+    {
+        t_sensor = millis();
+        Serial.println("Getting DHT11 sensor values");
+        this->get_temp_sensor();
+        if (first_time)
+        {
+            // SETTING STARTING TEMPERATURE
+            temp_cur_check = this->temp_current;
+        }
+    }
 
-    //timedeltaT
-    /*if (millis() - t_temp_check > 60000)
+    if (((millis() - t_temp_check > 60000) && thermostat_on) || first_time)
     {
         t_temp_check = millis();
-        if (temp_current < temp_selected + 0.5)
-        {
-            this->set_relay(1);
-        }
-        else
-        {
-            this->set_relay(0);
-        }
-    }*/
 
-    if (millis() - t_temp_check > 60000)
+        if (temp_current - temp_cur_check > 1.0 || first_time)
+        {
+            Serial.println("Temp variation >1 : Sending <deltaT,time> to ServiceTempLog");
+
+            String msg;
+            msg = "{\"action\":\"send\",\"data\":{\"temperature\":" + String(this->temp_current) + ",\"time\":" + String(millis()) + "}}";
+            sysServices->sendMsg("ServiceTempLog", msg);
+
+            // THE CURRENT TEMP IS THE NEW STARTING POINT
+            temp_cur_check = temp_current;
+        }
+    }
+
+    // PUBLISH MQTT DATA AND READ TEMP_CONTROLL
+
+    if (millis() - t_mqtt_pub > 60000)
     {
-        t_temp_check = millis();
-        if (temp_current < temp_selected + 0.5)
-        {
+        t_mqtt_pub = millis();
+        // Verify MQTT connection
+        Serial.println("Getting MQTT connection status");
 
+        String msg = "{\"action\":\"send\",\"data\":{\"action\":\"connect\"}}";
+        if (strcmp(sysServices->sendMsg("ServiceMQTT", msg).c_str(), "{\"data\":1}") == 0)
+        {
+            Serial.println("Verifying temperature_control msg from MQTT");
+
+            msg = "{\"action\":\"get\"}";
+            String temp_control_msg = sysServices->sendMsg("ServiceTempHumidityMQTT", msg);
+
+            DynamicJsonDocument doc(96);
+
+            DeserializationError error = deserializeJson(doc, temp_control_msg);
+
+            if (!error)
+            {
+                // GET THE MQTT SELECTED TEMPERATURE
+                temp_selected = doc["data"]["temperature_contoll"];
+                Serial.println("New temperature setted: " + String(temp_selected));
+                if (!thermostat_on)
+                {
+                    thermostat_on = true;
+                    Serial.println("Thermostat remotely turned on");
+                }
+            }
+
+            Serial.println("Sending temperature and humidity to MQTT");
+
+            // SENDING TEMPERATURE AND HUMIDITY TO MQTT MASTER
+            msg = "{\"action\":\"send\",\"data\":{\"temperature\":" + String(this->temp_current) + ",\"humidity\":" + String(humidity) + ",\"temp_select\":" + String(temp_selected) + ",\"state\":" + String(thermostat_on) + "}}";
+            sysServices->sendMsg("ServiceTempHumidityMQTT", msg);
+        }
+    }
+
+    if (millis() - t_relay_check > 60000)
+    {
+        t_relay_check = millis();
+        if (temp_current < temp_selected + 0.2)
+        {
             this->set_relay(1);
         }
         else
@@ -166,6 +240,9 @@ void Home::background()
             this->set_relay(0);
         }
     }
+
+    // DISABLE FIRST TIME FUNCTIONS
+    first_time = 0;
 }
 
 void Home::get_temp_sensor()
@@ -177,15 +254,13 @@ void Home::get_temp_sensor()
 
     DeserializationError error = deserializeJson(doc, response);
 
-    if (error)
+    if (!error)
     {
-        Serial.print("deserializeJson() failed: ");
-        Serial.println(error.c_str());
-        return;
+        this->temp_current = doc["data"]["temperature"];
+        this->humidity = doc["data"]["humidity"];
+        Serial.println("Temp: " + String(temp_current));
+        Serial.println("Humidity: " + String(humidity));
     }
-
-    this->temp_current = doc["data"]["temperature"];
-    this->humidity = doc["data"]["humidity"];
 }
 
 void Home::get_time_service()

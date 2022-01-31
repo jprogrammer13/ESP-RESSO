@@ -6,6 +6,7 @@
 #include <Navigation.h>
 #include <System/SystemUi.h>
 #include <System/SystemServices.h>
+#include <images.h>
 
 class App : public Ui
 {

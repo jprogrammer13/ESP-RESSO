@@ -41,7 +41,7 @@ String ServiceMQTT::sendMsg(String msg)
             // Stop if already connected.
             if (this->mqtt->connected())
             {
-                Serial.println("MQTT IS CONNECTED");
+                // Serial.println("MQTT IS CONNECTED");
                 return "{\"data\":1}";
             }
 
