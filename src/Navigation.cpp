@@ -31,11 +31,11 @@ void Navigation::update()
 Action Navigation::get_action()
 {
     Action tmp_action = A_NONE;
-    if (states[0] >= 1)
+    if (states[0] > 1)
     {
         tmp_action = A_DOWN;
     }
-    else if (states[0] <= -1)
+    else if (states[0] < -1)
     {
         tmp_action = A_UP;
     }

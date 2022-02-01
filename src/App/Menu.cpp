@@ -5,7 +5,9 @@
 Menu::Menu(Navigation *_navigation, Display *_display, SystemUi *_sysUi, SystemServices *_sysService) : App(_navigation, _display, _sysUi, _sysService)
 {
     position = 0;
-    applications.insert(std::pair<String, int>("Test", 0x23f0));
+    applications.insert(std::pair<String, int>("Stats", 0x2750));
+    applications.insert(std::pair<String, int>("Weather", 0x2603));
+    applications.insert(std::pair<String, int>("HomeControl", 0x2617));
 
     n_applications = applications.size();
 }
@@ -19,9 +21,10 @@ void Menu::draw()
     do
     {
         display->setFont(u8g2_font_unifont_t_symbols);
-        display->drawGlyph(20, 20, iterator->second);
+        display->drawGlyph(56, 34, iterator->second);
         display->setFont(u8g2_font_7x14_tf);
-        display->setCursor(40, 40);
+        int x = display->getStrWidth(iterator->first.c_str());
+        display->setCursor(64-(x/2), 50);
         display->print(iterator->first);
 
     } while (display->nextPage());

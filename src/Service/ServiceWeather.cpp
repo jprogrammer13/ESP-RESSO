@@ -86,6 +86,7 @@ String ServiceWeather::sendMsg(String msg)
 
                 JsonObject list_item_weather_0 = list_item["weather"][0];
                 data_weather.add(list_item_weather_0["main"].as<String>());
+                data_weather.add(list_item_weather_0["description"].as<String>());
             }
 
             serializeJson(response, responseMsg);

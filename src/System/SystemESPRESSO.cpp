@@ -11,6 +11,7 @@ void SystemESPRESSO::serviceRegistration()
     services.insert(std::pair<String, Service *>("ServiceWiFi", new ServiceWiFi(this->wifi)));
     services.insert(std::pair<String, Service *>("ServiceMQTT", new ServiceMQTT(this->wifi, this->mqtt)));
     services.insert(std::pair<String, Service *>("ServiceTempHumidityMQTT", new ServiceTempHumidityMQTT(this->wifi, this->mqtt)));
+    services.insert(std::pair<String, Service *>("ServiceControlMQTT", new ServiceControlMQTT(this->wifi, this->mqtt)));
 }
 
 void SystemESPRESSO::applicationRegistration()
@@ -18,7 +19,9 @@ void SystemESPRESSO::applicationRegistration()
     applications.insert(std::pair<String, App *>("Config", new Config(navigation, display, systemUi, systemServices)));
     applications.insert(std::pair<String, App *>("Menu", new Menu(navigation, display, systemUi, systemServices)));
     applications.insert(std::pair<String, App *>("Home", new Home(navigation, display, systemUi, systemServices)));
-    applications.insert(std::pair<String, App *>("Test", new Test(navigation, display, systemUi, systemServices)));
+    applications.insert(std::pair<String, App *>("Stats", new Stats(navigation, display, systemUi, systemServices)));
+    applications.insert(std::pair<String, App *>("Weather", new Weather(navigation, display, systemUi, systemServices)));
+    applications.insert(std::pair<String, App *>("HomeControl", new HomeControl(navigation, display, systemUi, systemServices)));
 }
 
 void SystemESPRESSO::backgroundFunctionRegistration()
@@ -60,9 +63,12 @@ void SystemESPRESSO::begin()
 
 void SystemESPRESSO::runBackground()
 {
-    for (auto const &f : backgroundProcess)
+    if (this->wifi->status() == WL_CONNECTED) // EXECUTE ONLY IF WIFI IS AVAIABLE
     {
-        applications[f]->background();
+        for (auto const &f : backgroundProcess)
+        {
+            applications[f]->background();
+        }
     }
 }
 

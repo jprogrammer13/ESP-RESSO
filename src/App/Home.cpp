@@ -7,11 +7,14 @@ Home::Home(Navigation *_navigation, Display *_display, SystemUi *_sysUi, SystemS
     t_sensor = millis();
     t_mqtt_pub = millis();
     t_time = millis();
+    t_weather = millis();
     t_temp_check = millis();
     t_relay_check = millis();
 
     temp_current = 0;
     humidity = 0;
+
+    weather_icon = 0x00f0;
 
     hour = 0;
     minute = 0;
@@ -50,13 +53,12 @@ void Home::draw()
         display->drawStr(109, 26, (((day < 10) ? ("0" + String(day)) : String(day)).c_str()));
 
         // #### SEZIONE METEO ##########
+        display->setFont(u8g2_font_open_iconic_all_2x_t);
+        display->drawGlyph(68, 46, weather_icon);
 
         // SEZIONE DI SINISTRA
 
         // #### SEZIONE TEMP CORRENTE E SELEZIONATA ##########
-
-        display->setFont(u8g2_font_open_iconic_weather_2x_t);
-        display->drawGlyph(68, 46, 0x0045);
 
         display->setDrawColor(1);
         display->setFont(u8g2_font_fur20_tn);
@@ -158,6 +160,14 @@ void Home::background()
         this->get_time_service();
     }
 
+    // GET WEATHER
+    if (millis() - t_weather > 1800000 || first_time)
+    {
+        t_weather = millis();
+        Serial.println("Getting weather value");
+        this->get_weather_service();
+    }
+
     // GET SENSOR VALUES
     if (millis() - t_sensor > 10000 || first_time)
     {
@@ -213,7 +223,12 @@ void Home::background()
                 // GET THE MQTT SELECTED TEMPERATURE
                 temp_selected = doc["data"]["temperature_contoll"];
                 Serial.println("New temperature setted: " + String(temp_selected));
-                if (!thermostat_on)
+                if (thermostat_on && temp_selected < 15)
+                {
+                    thermostat_on = false;
+                    Serial.println("Thermostat remotely turned off");
+                }
+                else if (!thermostat_on)
                 {
                     thermostat_on = true;
                     Serial.println("Thermostat remotely turned on");
@@ -284,6 +299,37 @@ void Home::get_time_service()
     this->day = data["day"];
     this->hour = data["hour"];
     this->minute = data["minute"];
+}
+
+void Home::get_weather_service()
+{
+    String msg = "{\"action\":\"get\",\"data\":{\"city\":\"Verona\",\"n_day\":1}}";
+    String response = sysServices->sendMsg("ServiceWeather", msg);
+    Serial.println(response);
+
+    DynamicJsonDocument doc(512);
+
+    DeserializationError error = deserializeJson(doc, response);
+
+    if (!error)
+    {
+        JsonObject data = doc["data"];
+        const char *data_weather_0 = data["weather"][0];
+
+        for (int i = 0; i < 6; i++)
+        {
+            if (strcmp(data_weather_0, weather_descriptions[i].c_str()) == 0)
+            {
+                this->weather_icon = this->weather_icons[i];
+                break;
+            }
+            else
+            {
+                this->weather_icon = 0x00f0;
+            }
+        }
+    }
+    // Serial.println(response);
 }
 
 void Home::set_relay(bool state)

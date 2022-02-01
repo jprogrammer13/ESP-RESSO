@@ -6,3 +6,4 @@
 #include <Service/ServiceTime.h>
 #include <Service/ServiceRelay.h>
 #include <Service/ServiceTempLog.h>
+#include <Service/ServiceControlMQTT.h>
