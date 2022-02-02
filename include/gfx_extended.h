@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
 #include <utils.h>
+#include <config.h>
 
 class Display : public U8G2_ST7920_128X64_F_SW_SPI
 {

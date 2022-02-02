@@ -4,6 +4,7 @@
 #include <actions.h>
 #include <ESP32Encoder.h>
 #include <Button.h>
+#include <config.h>
 
 class Navigation
 {

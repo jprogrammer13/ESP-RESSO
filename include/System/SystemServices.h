@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <Service.h>
 #include <map>
+#include <config.h>
 
 class SystemServices
 {

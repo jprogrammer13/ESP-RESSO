@@ -7,6 +7,7 @@
 #include <System/SystemUi.h>
 #include <System/SystemServices.h>
 #include <images.h>
+#include <config.h>
 
 class App : public Ui
 {

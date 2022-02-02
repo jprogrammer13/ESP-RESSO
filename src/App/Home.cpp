@@ -181,23 +181,6 @@ void Home::background()
         }
     }
 
-    if (((millis() - t_temp_check > 60000) && thermostat_on) || first_time)
-    {
-        t_temp_check = millis();
-
-        if (temp_current - temp_cur_check > 1.0 || first_time)
-        {
-            Serial.println("Temp variation >1 : Sending <deltaT,time> to ServiceTempLog");
-
-            String msg;
-            msg = "{\"action\":\"send\",\"data\":{\"temperature\":" + String(this->temp_current) + ",\"time\":" + String(millis()) + "}}";
-            sysServices->sendMsg("ServiceTempLog", msg);
-
-            // THE CURRENT TEMP IS THE NEW STARTING POINT
-            temp_cur_check = temp_current;
-        }
-    }
-
     // PUBLISH MQTT DATA AND READ TEMP_CONTROLL
 
     if (millis() - t_mqtt_pub > 60000)

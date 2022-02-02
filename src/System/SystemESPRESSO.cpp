@@ -4,7 +4,6 @@
 void SystemESPRESSO::serviceRegistration()
 {
     services.insert(std::pair<String, Service *>("ServiceTempHumidity", new ServiceTempHumidity()));
-    services.insert(std::pair<String, Service *>("ServiceTempLog", new ServiceTempLog()));
     services.insert(std::pair<String, Service *>("ServiceRelay", new ServiceRelay()));
     services.insert(std::pair<String, Service *>("ServiceWeather", new ServiceWeather(this->wifi)));
     services.insert(std::pair<String, Service *>("ServiceTime", new ServiceTime(this->wifi)));
@@ -12,6 +11,7 @@ void SystemESPRESSO::serviceRegistration()
     services.insert(std::pair<String, Service *>("ServiceMQTT", new ServiceMQTT(this->wifi, this->mqtt)));
     services.insert(std::pair<String, Service *>("ServiceTempHumidityMQTT", new ServiceTempHumidityMQTT(this->wifi, this->mqtt)));
     services.insert(std::pair<String, Service *>("ServiceControlMQTT", new ServiceControlMQTT(this->wifi, this->mqtt)));
+    services.insert(std::pair<String, Service *>("ServiceFinance", new ServiceFinance(this->wifi)));
 }
 
 void SystemESPRESSO::applicationRegistration()
@@ -19,9 +19,10 @@ void SystemESPRESSO::applicationRegistration()
     applications.insert(std::pair<String, App *>("Config", new Config(navigation, display, systemUi, systemServices)));
     applications.insert(std::pair<String, App *>("Menu", new Menu(navigation, display, systemUi, systemServices)));
     applications.insert(std::pair<String, App *>("Home", new Home(navigation, display, systemUi, systemServices)));
-    applications.insert(std::pair<String, App *>("Stats", new Stats(navigation, display, systemUi, systemServices)));
+    applications.insert(std::pair<String, App *>("Frame", new Frame(navigation, display, systemUi, systemServices)));
     applications.insert(std::pair<String, App *>("Weather", new Weather(navigation, display, systemUi, systemServices)));
     applications.insert(std::pair<String, App *>("HomeControl", new HomeControl(navigation, display, systemUi, systemServices)));
+    applications.insert(std::pair<String, App *>("Finance", new Finance(navigation, display, systemUi, systemServices)));
 }
 
 void SystemESPRESSO::backgroundFunctionRegistration()

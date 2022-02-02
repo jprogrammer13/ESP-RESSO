@@ -5,6 +5,7 @@
 #include <Ui.h>
 #include <Navigation.h>
 #include <map>
+#include <config.h>
 
 class SystemUi
 {
