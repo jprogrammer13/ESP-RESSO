@@ -13,14 +13,14 @@ void Config::draw()
     display->firstPage();
     do
     {
-       display->drawXBMP(42, 12, 44, 44, logo);
+        display->drawXBMP(42, 12, 44, 44, logo);
 
     } while (display->nextPage());
 
     // INITIAL WIFI CONFIG AND CONNECT
     Serial.println("Connecting WiFi");
 
-    String msg = "{\"action\":\"send\",\"data\":{\"wifi_mode\":\"WIFI_STA\",\"ssid\":\"FRITZ!Box 7490\",\"psw\":\"RiccardoBussola13\"}}";
+    String msg = "{\"action\":\"send\",\"data\":{\"wifi_mode\":\"WIFI_STA\",\"ssid\":\"" WIFI_SSID "\",\"psw\":\"" WIFI_PSWD "\"}}";
     // ONCE WIFI CONNECTED, CONNECT MQTT
     if (strcmp(sysServices->sendMsg("ServiceWiFi", msg).c_str(), "{\"data\":1}") == 0)
     {

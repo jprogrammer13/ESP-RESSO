@@ -5,7 +5,7 @@
 Weather::Weather(Navigation *_navigation, Display *_display, SystemUi *_sysUi, SystemServices *_sysService) : App(_navigation, _display, _sysUi, _sysService)
 {
     first_time = true;
-    city = "Verona";
+    city = CITY;
     no_day = 1;
     y_position = 0;
     weather_icon = 0x00f0;

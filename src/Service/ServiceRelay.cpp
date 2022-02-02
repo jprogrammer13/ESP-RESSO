@@ -3,7 +3,7 @@
 
 ServiceRelay::ServiceRelay()
 {
-    this->relay_pin = 26;
+    this->relay_pin = RELAY_PIN;
     pinMode(this->relay_pin, OUTPUT);
     this->status = 0;
 };

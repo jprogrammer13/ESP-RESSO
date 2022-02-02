@@ -6,7 +6,7 @@ ServiceWeather::ServiceWeather(){};
 
 ServiceWeather::ServiceWeather(WiFiClass *_wifi) : Service(_wifi)
 {
-    API_key = "6f3d3af7da198e596a118561c69807db";
+    API_key = WEATHER_API_KEY;
     t_start = millis();
 }
 

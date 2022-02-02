@@ -6,18 +6,12 @@ ServiceFinance::ServiceFinance(){};
 
 ServiceFinance::ServiceFinance(WiFiClass *_wifi) : Service(_wifi)
 {
-    API_key = "coinranking41751c93cd1d35e5d699682b5fb5b08cd3461f4fd4e8153a";
+    API_key = FINANCE_API_KEY;
 }
 
 String ServiceFinance::sendMsg(String msg)
 {
     String responseMsg;
-    // expected "action":"get"
-    // data can be:
-    /**
-     * @city: name of the city
-     * @n_day: number of future day
-     */
 
     DynamicJsonDocument doc(128);
 

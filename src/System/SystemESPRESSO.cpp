@@ -33,16 +33,16 @@ void SystemESPRESSO::backgroundFunctionRegistration()
 SystemESPRESSO::SystemESPRESSO()
 {
 
-    navigation = new Navigation(4, 12, 21, 22);
+    navigation = new Navigation(B_BACK_PIN, B_SLC_PIN, ENCODER_CLK_PIN, ENCODER_DT_PIN);
 
     systemUi = new SystemUi();
     systemServices = new SystemServices();
 
-    display = new Display(U8G2_R0, 18, 23, 5);
+    display = new Display(U8G2_R0, DISPLAY_CLOCK_PIN, DISPLAY_DATA_PIN, DISPLAY_CS_PIN);
 
     wifi = new WiFiClass();
 
-    mqtt = new Adafruit_MQTT_Client(&(wifiClientSecure), "io.adafruit.com", 8883, "Riccardo136", "c6056b140d174bdfbe55d6fb637e8695");
+    mqtt = new Adafruit_MQTT_Client(&(wifiClientSecure), ADAFRUIT_SERVER, ADAFRUIT_SERVER_PORT, ADAFRUIT_USERNAME, ADAFRUIT_API_KEY);
     wifiClientSecure.setCACert(adafruitio_root_ca);
 
     // INITIALIZE APPLICATIONS AND BACKGROUN FUNCTIONS

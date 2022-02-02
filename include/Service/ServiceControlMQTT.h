@@ -9,5 +9,5 @@ public:
     String sendMsg(String msg);
 
 private:
-    Adafruit_MQTT_Publish control_topic = Adafruit_MQTT_Publish(this->mqtt, "Riccardo136/feeds/device_control");
+    Adafruit_MQTT_Publish control_topic = Adafruit_MQTT_Publish(this->mqtt, ADAFRUIT_USERNAME "/feeds/device_control");
 };

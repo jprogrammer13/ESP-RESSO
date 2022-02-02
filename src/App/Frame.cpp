@@ -50,7 +50,7 @@ void Frame::draw()
 
 void Frame::get_time_service()
 {
-    String msg = "{\"action\":\"get\",\"data\":{\"gmt_offset\":3600,\"light_offest\":3600}}";
+    String msg = "{\"action\":\"get\",\"data\":{\"gmt_offset\":"+String(GMT_OFFSET)+",\"light_offset\":"+String(LIGHT_OFFSET)+"}}";
     String response = sysServices->sendMsg("ServiceTime", msg);
 
     DynamicJsonDocument doc(256);

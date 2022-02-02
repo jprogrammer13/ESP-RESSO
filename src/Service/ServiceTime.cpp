@@ -5,7 +5,7 @@ ServiceTime::ServiceTime(){};
 
 ServiceTime::ServiceTime(WiFiClass *_wifi) : Service(_wifi)
 {
-    ntp_server = "0.it.pool.ntp.org";
+    ntp_server = NTP_SERVER_URL;
 };
 
 String ServiceTime::sendMsg(String msg)
@@ -30,7 +30,7 @@ String ServiceTime::sendMsg(String msg)
     const char *action = doc["action"]; // "get"
 
     int data_gmt_offset = doc["data"]["gmt_offset"];
-    int data_light_offest = doc["data"]["light_offest"];
+    int data_light_offset = doc["data"]["light_offset"];
 
     DynamicJsonDocument response(255);
 
@@ -38,7 +38,7 @@ String ServiceTime::sendMsg(String msg)
 
     if (strcmp(action, "get") == 0)
     {
-        configTime(data_gmt_offset, data_light_offest, ntp_server.c_str());
+        configTime(data_gmt_offset, data_light_offset, ntp_server.c_str());
         struct tm timeinfo;
         if (getLocalTime(&timeinfo))
         {

@@ -263,7 +263,7 @@ void Home::get_temp_sensor()
 
 void Home::get_time_service()
 {
-    String msg = "{\"action\":\"get\",\"data\":{\"gmt_offset\":3600,\"light_offest\":3600}}";
+    String msg = "{\"action\":\"get\",\"data\":{\"gmt_offset\":" + String(GMT_OFFSET) + ",\"light_offset\":" + String(LIGHT_OFFSET) + "}}";
     String response = sysServices->sendMsg("ServiceTime", msg);
 
     DynamicJsonDocument doc(256);
@@ -286,7 +286,7 @@ void Home::get_time_service()
 
 void Home::get_weather_service()
 {
-    String msg = "{\"action\":\"get\",\"data\":{\"city\":\"Verona\",\"n_day\":1}}";
+    String msg = "{\"action\":\"get\",\"data\":{\"city\":\"" CITY "\",\"n_day\":1}}";
     String response = sysServices->sendMsg("ServiceWeather", msg);
     Serial.println(response);
 
