@@ -9,7 +9,7 @@ public:
     String sendMsg(String msg);
 
 private:
-    DHT tempSensor = DHT(27, DHT11);
+    DHT tempSensor = DHT(DHT11_PIN, DHT11);
     float temperature;
     float humidity;
     unsigned long t_start;

@@ -20,7 +20,7 @@ String ServiceTempHumidity::sendMsg(String msg)
     // String input;
 
     // TO READ THE INPUT MSG
-    StaticJsonDocument<96> doc; // can change in other service
+    DynamicJsonDocument doc(96); // can change in other service
 
     DeserializationError error = deserializeJson(doc, msg);
 
@@ -44,7 +44,7 @@ String ServiceTempHumidity::sendMsg(String msg)
 
     // TO RESPOND
 
-    StaticJsonDocument<48> response;
+    DynamicJsonDocument response(48);
 
     JsonObject data_resp = response.createNestedObject("data");
 
@@ -63,14 +63,12 @@ String ServiceTempHumidity::sendMsg(String msg)
         {
             data_resp["humidity"] = humidity;
         }
+        serializeJson(response, responseMsg);
     }
     else
     {
-        data_resp["temperature"] = -255;
-        data_resp["humidity"] = -255;
+        responseMsg = "error";
     }
-
-    serializeJson(response, responseMsg);
 
     return responseMsg;
 }

@@ -1,10 +1,13 @@
 #ifndef __APP_H__
 #define __APP_H__
 #include <Arduino.h>
+#include <U8g2lib.h>
 #include <gfx_extended.h>
 #include <Navigation.h>
 #include <System/SystemUi.h>
 #include <System/SystemServices.h>
+#include <images.h>
+#include <config.h>
 
 class App : public Ui
 {

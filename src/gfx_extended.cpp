@@ -135,3 +135,71 @@ void Display::drawArc(int32_t cx, int32_t cy, float start, float stop, uint16_t 
         y1 = y2;
     }
 }
+
+void Display::drawDithering(int sx, int sy, int w, int h, int percent, int size)
+{
+    switch (percent)
+    {
+    // 75% (DARK GREY)
+    case (75):
+
+        for (int y = sy; y < sy + h; y++)
+        {
+            for (int x = sx; x < sx + w; x++)
+            {
+                if (y % 2 == 0)
+                {
+                    if (x % 2 != 0)
+                    {
+                        drawBox(x, y, size, size);
+                    }
+                }
+                else
+                {
+                    drawBox(x, y, size, size);
+                }
+            }
+        }
+        break;
+
+    // 50% (MIDDLE GREY)
+    case (50):
+
+        for (int y = sy; y < sy + h; y++)
+        {
+            for (int x = sx; x < sx + w; x++)
+            {
+                if (y % 2 == 0)
+                {
+                    if (x % 2 != 0)
+                    {
+                        drawBox(x, y, size, size);
+                    }
+                }
+                else if (x % 2 == 0)
+                {
+                    drawBox(x, y, size, size);
+                }
+            }
+        }
+        break;
+
+        // 25% (LIGHT GREY)
+    case (25):
+
+        for (int y = sy; y < sy + h; y++)
+        {
+            for (int x = sx; x < sx + w; x++)
+            {
+                if (y % 2 != 0)
+                {
+                    if (x % 2 == 0)
+                    {
+                        drawBox(x, y, size, size);
+                    }
+                }
+            }
+        }
+        break;
+    }
+}

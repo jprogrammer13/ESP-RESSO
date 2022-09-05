@@ -1,6 +1,7 @@
 #ifndef __BUTTON_H__
 #define __BUTTON_H__
 #include <Arduino.h>
+#include <config.h>
 
 class Button
 {
